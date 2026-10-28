@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ms" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FloraBloom | Kedai Bunga Artisanal</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons & Canvas Confetti -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..800;1,400..800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- CSS Luaran -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-cream text-stone-800 font-sans antialiased selection:bg-bloom-200 selection:text-bloom-900 pb-20 md:pb-0">
+
+    <!-- BAR PENGUMUMAN -->
+    <div class="bg-sage-700 text-stone-100 text-xs py-2 px-4 text-center font-medium tracking-wide flex justify-center items-center gap-2">
+        <span>🌸 Penghantaran hari yang sama untuk pesanan sebelum 2 PETANG!</span>
+        <span class="hidden sm:inline-block">• Guna kod <strong class="text-bloom-200 uppercase font-bold">BLOOM15</strong> untuk DISKAUN 15%</span>
+    </div>
+
+    <!-- HEADER / NAVIGASI UTAMA -->
+    <header class="sticky top-0 z-30 glass-panel border-b border-stone-200/60 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+            <!-- Logo Jenama -->
+            <a href="#" class="flex items-center gap-2 group">
+                <div class="w-10 h-10 rounded-full bg-bloom-100 flex items-center justify-center text-bloom-600 group-hover:bg-bloom-500 group-hover:text-white transition-all">
+                    <i data-lucide="flower-2" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <span class="font-serif text-2xl font-bold tracking-tight text-stone-900 block leading-none">FloraBloom</span>
+                    <span class="text-[10px] tracking-widest text-sage-600 font-medium uppercase">Botanical Studio</span>
+                </div>
+            </a>
+
+            <!-- Carian Desktop -->
+            <div class="hidden md:flex flex-1 max-w-md mx-6 relative">
+                <input type="text" id="desktop-search-input" placeholder="Cari jambak bunga, mawar, orkid..." 
+                    class="w-full pl-10 pr-4 py-2 text-sm bg-white border border-stone-200 rounded-full focus:outline-none focus:ring-2 focus:ring-bloom-400 focus:border-transparent transition-all shadow-sm">
+                <i data-lucide="search" class="w-4 h-4 text-stone-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+            </div>
+
+            <!-- Butang Tindakan Header -->
+            <div class="flex items-center gap-2 sm:gap-4">
+                <!-- Butang Wishlist -->
+                <button id="open-wishlist-btn" class="p-2.5 text-stone-700 hover:text-bloom-600 rounded-full hover:bg-stone-100 transition relative" aria-label="Wishlist">
+                    <i data-lucide="heart" class="w-5 h-5"></i>
+                    <span id="wishlist-badge" class="hidden absolute -top-1 -right-1 bg-bloom-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">0</span>
+                </button>
+
+                <!-- Butang Troli -->
+                <button id="open-cart-btn" class="p-2.5 bg-stone-900 text-white hover:bg-stone-800 rounded-full transition flex items-center gap-2 px-4 shadow-sm" aria-label="Troli">
+                    <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+                    <span class="hidden sm:inline text-xs font-semibold">Troli</span>
+                    <span id="cart-badge" class="bg-bloom-400 text-white text-xs font-bold px-2 py-0.5 rounded-full">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- BAHAGIAN HERO -->
+    <section class="relative overflow-hidden pt-6 pb-12 md:py-20 bg-gradient-to-b from-bloom-50/60 to-cream">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+                <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+                    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-sage-100 text-sage-800 text-xs font-semibold tracking-wide">
+                        <i data-lucide="sparkles" class="w-3.5 h-3.5 text-sage-600"></i>
+                        Gubahan Bunga Artisanal & Penghantaran Ekspres
+                    </div>
+                    <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold text-stone-900 tracking-tight leading-[1.15]">
+                        Bunga Segar Untuk Momen <span class="italic text-bloom-600 underline decoration-bloom-300 underline-offset-4">Indah</span> Hidup Anda
+                    </h1>
+                    <p class="text-stone-600 text-base sm:text-lg max-w-xl mx-auto lg:mx-0 leading-relaxed">
+                        Gubahan bunga khas yang digubah segar dan dihantar terus kepada insan tersayang. Reka gubahan tersendiri secara interaktif!
+                    </p>
+                    <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 sm:gap-4 pt-2">
+                        <a href="#shop-section" class="w-full sm:w-auto px-7 py-3.5 bg-stone-900 text-white font-medium text-sm rounded-full hover:bg-bloom-600 transition duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2">
+                            <span>Lihat Koleksi</span>
+                            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        </a>
+                        <a href="#builder-section" class="w-full sm:w-auto px-7 py-3.5 bg-white border border-stone-300 text-stone-800 font-medium text-sm rounded-full hover:bg-stone-50 hover:border-stone-400 transition duration-300 flex items-center justify-center gap-2">
+                            <i data-lucide="palette" class="w-4 h-4 text-bloom-500"></i>
+                            <span>Cipta Bunga Sendiri</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-5 relative">
+                    <div class="relative mx-auto max-w-sm sm:max-w-md lg:max-w-none">
+                        <div class="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white bg-white">
+                            <img src="https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&w=800&q=80" 
+                                 alt="Jambak Bunga Mawar" 
+                                 class="w-full h-[380px] sm:h-[450px] object-cover object-center transform hover:scale-105 transition duration-700">
+                            
+                            <div class="absolute bottom-4 left-4 right-4 glass-panel p-4 rounded-2xl border border-white/40 shadow-lg flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-xl bg-bloom-500 text-white flex items-center justify-center shrink-0">
+                                        <i data-lucide="crown" class="w-5 h-5"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-stone-500 uppercase font-semibold tracking-wider">Paling Laris</p>
+                                        <p class="font-serif text-sm font-bold text-stone-900">Peony Romance Bouquet</p>
+                                    </div>
+                                </div>
+                                <span class="text-bloom-600 font-bold text-sm">RM 180.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- KATEGORI SLIDER -->
+    <section class="py-8 bg-white border-y border-stone-200/60">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-serif font-bold text-stone-900">Pilih Mengikut Kategori</h2>
+                <span class="text-xs text-stone-400 sm:hidden">Tatal →</span>
+            </div>
+            
+            <div class="flex items-center gap-3 overflow-x-auto no-scrollbar pb-2 pt-1 touch-pan-x" id="category-pills">
+                <!-- Dijana melalui JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- KATALOG PRODUK -->
+    <section id="shop-section" class="py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+            <div>
+                <span class="text-xs font-semibold tracking-widest text-bloom-600 uppercase">Koleksi Bunga Segar</span>
+                <h2 class="font-serif text-2xl sm:text-3xl font-bold text-stone-900 mt-1">Pilihan Terbaik Hari Ini</h2>
+            </div>
+
+            <div class="flex items-center gap-3 overflow-x-auto pb-1">
+                <select id="sort-select" class="px-3.5 py-2 text-xs font-medium bg-white border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-bloom-400 text-stone-700 shadow-sm">
+                    <option value="featured">Susunan: Utama</option>
+                    <option value="price-asc">Harga: Rendah ke Tinggi</option>
+                    <option value="price-desc">Harga: Tinggi ke Rendah</option>
+                    <option value="rating">Penilaian Tertinggi</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Grid Produk -->
+        <div id="product-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+            <!-- Dijana melalui JS -->
+        </div>
+    </section>
+
+    <!-- BINA JAMBAK BUNGA INTERAKTIF -->
+    <section id="builder-section" class="py-16 bg-stone-900 text-white relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center max-w-2xl mx-auto mb-12">
+                <span class="text-xs font-semibold tracking-widest text-bloom-300 uppercase">Studio Interaktif</span>
+                <h2 class="font-serif text-3xl sm:text-4xl font-bold mt-1 text-cream">Rekabentuk Bunga Sendiri</h2>
+                <p class="text-stone-400 text-sm mt-2">Pilih jenis bunga, bilangan batang, warna balutan, dan kad ucapan dengan pratonton langsung.</p>
+            </div>
+
+            <div class="grid lg:grid-cols-12 gap-8 items-start">
+                <!-- Pratonton Langsung -->
+                <div class="lg:col-span-5 bg-stone-800/80 rounded-3xl p-6 border border-stone-700/60 flex flex-col items-center justify-between min-h-[460px] relative">
+                    <div class="w-full flex justify-between items-center text-xs text-stone-400 border-b border-stone-700 pb-3">
+                        <span>Pratonton Langsung</span>
+                        <span id="builder-stem-badge" class="bg-bloom-500/20 text-bloom-300 px-2.5 py-0.5 rounded-full font-semibold border border-bloom-500/30">12 Batang</span>
+                    </div>
+
+                    <div class="my-8 relative flex items-center justify-center w-full h-64">
+                        <div id="preview-wrap" class="absolute bottom-0 w-44 h-48 rounded-b-full bg-gradient-to-t from-amber-100 to-amber-200 border-2 border-stone-600 transition-all duration-300 shadow-2xl flex items-center justify-center">
+                            <div id="preview-ribbon" class="absolute bottom-12 w-full h-6 bg-bloom-500 shadow-md flex items-center justify-center">
+                                <i data-lucide="bookmark" class="w-4 h-4 text-white rotate-90"></i>
+                            </div>
+                        </div>
+                        <div id="preview-flowers" class="relative z-10 flex flex-wrap justify-center gap-2 max-w-[200px] mb-16 transform transition duration-300">
+                            <!-- Ikon bunga dinamik -->
+                        </div>
+                    </div>
+
+                    <div class="w-full bg-stone-900/90 rounded-2xl p-4 border border-stone-700/80 flex items-center justify-between">
+                        <div>
+                            <p class="text-[11px] text-stone-400 uppercase tracking-wider font-semibold">Jumlah Harga</p>
+                            <p id="builder-total-price" class="text-2xl font-serif font-bold text-bloom-300">RM 120.00</p>
+                        </div>
+                        <button id="add-builder-to-cart-btn" class="px-6 py-3 bg-bloom-500 hover:bg-bloom-400 text-white text-xs font-semibold rounded-xl transition shadow-lg flex items-center gap-2">
+                            <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+                            <span>Tambah Ke Troli</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Kawalan Studio -->
+                <div class="lg:col-span-7 space-y-6">
+                    <div class="bg-stone-800/50 p-5 rounded-2xl border border-stone-700">
+                        <label class="block text-xs font-bold text-stone-300 uppercase tracking-wider mb-3">1. Pilih Bunga Utama</label>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5" id="flower-type-selector">
+                            <!-- Dijana JS -->
+                        </div>
+                    </div>
+
+                    <div class="bg-stone-800/50 p-5 rounded-2xl border border-stone-700">
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="text-xs font-bold text-stone-300 uppercase tracking-wider">2. Bilangan Batang</label>
+                            <span id="stem-count-label" class="text-sm font-semibold text-bloom-300">12 Batang</span>
+                        </div>
+                        <input type="range" id="stem-range" min="6" max="36" step="6" value="12" class="w-full accent-bloom-400 cursor-pointer h-2 bg-stone-700 rounded-lg">
+                    </div>
+
+                    <div class="grid sm:grid-cols-2 gap-4">
+                        <div class="bg-stone-800
