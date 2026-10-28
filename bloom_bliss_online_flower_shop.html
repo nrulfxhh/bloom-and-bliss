@@ -1,0 +1,1429 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bloom & Bliss | Artisanal Floral Studio</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        botanical: {
+                            50: '#f4f7f4',
+                            100: '#e6ede6',
+                            200: '#cfdccf',
+                            300: '#adcaad',
+                            400: '#83ad83',
+                            500: '#618e61',
+                            600: '#4a724a',
+                            700: '#3c5b3c',
+                            800: '#324a32',
+                            900: '#2a3d2a',
+                        },
+                        bliss: {
+                            50: '#fdf4f5',
+                            100: '#fbe6e8',
+                            200: '#f7d1d6',
+                            300: '#f1abb4',
+                            400: '#e77b8b',
+                            500: '#d95367',
+                            600: '#c33950',
+                            700: '#a32b3f',
+                            800: '#882738',
+                            900: '#732432',
+                        },
+                        cream: '#FAF7F2',
+                    },
+                    fontFamily: {
+                        serif: ['Playfair Display', 'Georgia', 'serif'],
+                        sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+                        hand: ['Caveat', 'cursive']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome & Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Canvas Confetti for celebrate effect -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #FAF7F2;
+            -webkit-tap-highlight-color: transparent;
+        }
+        h1, h2, h3, .font-serif {
+            font-family: 'Playfair Display', serif;
+        }
+        .font-handwriting {
+            font-family: 'Caveat', cursive;
+        }
+        /* Hide scrollbars for slick mobile touch scrolling */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        /* Smooth scale animation on click */
+        .active-bounce:active {
+            transform: scale(0.95);
+        }
+        /* Petal Floating Animation */
+        @keyframes floatPetal {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+        .petal {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            animation: floatPetal 3s linear forwards;
+        }
+    </style>
+</head>
+<body class="h-full text-slate-800 antialiased pb-20 md:pb-0 selection:bg-bliss-200 selection:text-bliss-900">
+
+    <!-- Petal Animation Container -->
+    <div id="petal-container" class="fixed inset-0 pointer-events-none z-50 overflow-hidden"></div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed top-4 left-1/2 -translate-x-1/2 z-[100] flex flex-col gap-2 w-11/12 max-w-sm pointer-events-none"></div>
+
+    <!-- STICKY TOP NAVIGATION BAR -->
+    <header class="sticky top-0 z-40 bg-cream/90 backdrop-blur-md border-b border-stone-200/60 transition-all">
+        <!-- Announcement Bar -->
+        <div class="bg-botanical-800 text-stone-100 text-[11px] font-medium py-1.5 px-4 text-center tracking-wide flex justify-center items-center gap-2">
+            <span>✨ Free Express Same-Day Delivery on orders over $85!</span>
+            <span class="hidden sm:inline-block text-botanical-300">• Use code <strong class="text-bliss-200 font-bold">BLOOM10</strong> for 10% OFF</span>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
+            <!-- Brand Logo -->
+            <a href="#" class="flex items-center gap-2 group">
+                <div class="w-9 h-9 rounded-full bg-bliss-100 text-bliss-600 flex items-center justify-center shadow-sm group-hover:bg-bliss-500 group-hover:text-white transition-colors">
+                    <i data-lucide="flower-2" class="w-5 h-5"></i>
+                </div>
+                <div class="flex flex-col">
+                    <span class="font-serif text-xl font-bold tracking-tight text-stone-900 leading-none">Bloom & Bliss</span>
+                    <span class="text-[9px] uppercase tracking-widest text-botanical-600 font-semibold">Artisanal Florist</span>
+                </div>
+            </a>
+
+            <!-- Search Bar (Desktop & Mobile) -->
+            <div class="flex-1 max-w-md mx-2 relative">
+                <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-stone-400"></i>
+                <input type="text" id="global-search" placeholder="Search roses, peonies, lilies..." 
+                    class="w-full bg-white/80 border border-stone-200 text-xs sm:text-sm pl-9 pr-8 py-2 rounded-full focus:outline-none focus:ring-2 focus:ring-botanical-500/30 focus:border-botanical-500 transition-all shadow-inner">
+                <button id="clear-search" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600">
+                    <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                </button>
+            </div>
+
+            <!-- Header Quick Actions (Wishlist & Cart) -->
+            <div class="flex items-center gap-2">
+                <button onclick="switchTab('favorites')" class="relative p-2 text-stone-700 hover:text-bliss-600 rounded-full hover:bg-white/60 transition active-bounce">
+                    <i data-lucide="heart" class="w-5 h-5"></i>
+                    <span id="fav-badge" class="hidden absolute -top-1 -right-1 bg-bliss-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">0</span>
+                </button>
+                <button onclick="toggleCartDrawer(true)" class="relative p-2 bg-botanical-700 hover:bg-botanical-800 text-white rounded-full transition active-bounce shadow-md flex items-center gap-1.5 px-3">
+                    <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+                    <span id="cart-badge-count" class="font-bold text-xs">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="max-w-7xl mx-auto px-4 py-4 space-y-8">
+
+        <!-- PAGE TABS CONTAINER -->
+        
+        <!-- SECTION 1: SHOP / HOME VIEW -->
+        <div id="tab-home" class="space-y-8 transition-opacity duration-300">
+            <!-- HERO BANNER CAROUSEL -->
+            <div class="relative rounded-3xl overflow-hidden bg-stone-900 text-white shadow-xl min-h-[340px] md:min-h-[400px] flex items-center">
+                <img src="https://images.unsplash.com/photo-1563241527-3004b7be0ffd?auto=format&fit=crop&w=1400&q=80" alt="Fresh Flowers Hero" class="absolute inset-0 w-full h-full object-cover opacity-60">
+                <div class="absolute inset-0 bg-gradient-to-r from-stone-950/80 via-stone-900/50 to-transparent"></div>
+                
+                <div class="relative z-10 p-6 md:p-12 max-w-xl space-y-4">
+                    <span class="inline-block px-3 py-1 rounded-full bg-bliss-500/90 text-white text-xs font-semibold tracking-wider uppercase backdrop-blur-sm">Fresh Spring Collection</span>
+                    <h1 class="text-3xl md:text-5xl font-bold leading-tight font-serif">Crafted to bring Pure Joy & Bliss.</h1>
+                    <p class="text-stone-200 text-sm md:text-base leading-relaxed">Hand-curated luxury bouquets, sustainably sourced & delivered fresh to their doorstep today.</p>
+                    <div class="pt-2 flex flex-wrap gap-3">
+                        <a href="#catalog-section" class="px-6 py-3 rounded-full bg-botanical-600 hover:bg-botanical-700 text-white font-medium text-sm transition shadow-lg flex items-center gap-2 active-bounce">
+                            <span>Explore Catalog</span>
+                            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        </a>
+                        <button onclick="switchTab('custom-builder')" class="px-6 py-3 rounded-full bg-white/20 hover:bg-white/30 text-white backdrop-blur-md border border-white/40 font-medium text-sm transition active-bounce flex items-center gap-2">
+                            <i data-lucide="wand-2" class="w-4 h-4 text-bliss-300"></i>
+                            <span>Build Custom Bouquet</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- QUICK OCCASIONS FILTER CHIPS (Horizontal Scrollable) -->
+            <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                    <h2 class="font-serif text-xl font-bold text-stone-900">Shop by Occasion</h2>
+                    <button onclick="resetFilters()" class="text-xs text-botanical-600 font-semibold hover:underline">Reset Filters</button>
+                </div>
+                <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1 -mx-4 px-4 sm:mx-0 sm:px-0">
+                    <button onclick="filterByOccasion('all')" class="occasion-chip active shrink-0 px-4 py-2.5 rounded-full text-xs font-semibold transition border border-botanical-600 bg-botanical-700 text-white shadow-sm flex items-center gap-2">
+                        <span>✨ All Flowers</span>
+                    </button>
+                    <button onclick="filterByOccasion('Romance')" class="occasion-chip shrink-0 px-4 py-2.5 rounded-full text-xs font-semibold transition border border-stone-200 bg-white text-stone-700 hover:border-bliss-300 hover:bg-bliss-50/50 flex items-center gap-2">
+                        <span>❤️ Romance & Love</span>
+                    </button>
+                    <button onclick="filterByOccasion('Birthday')" class="occasion-chip shrink-0 px-4 py-2.5 rounded-full text-xs font-semibold transition border border-stone-200 bg-white text-stone-700 hover:border-bliss-300 hover:bg-bliss-50/50 flex items-center gap-2">
+                        <span>🎂 Birthday Blooms</span>
+                    </button>
+                    <button onclick="filterByOccasion('Anniversary')" class="occasion-chip shrink-0 px-4 py-2.5 rounded-full text-xs font-semibold transition border border-stone-200 bg-white text-stone-700 hover:border-bliss-300 hover:bg-bliss-50/50 flex items-center gap-2">
+                        <span>💍 Anniversary</span>
+                    </button>
+                    <button onclick="filterByOccasion('Sympathy')" class="occasion-chip shrink-0 px-4 py-2.5 rounded-full text-xs font-semibold transition border border-stone-200 bg-white text-stone-700 hover:border-bliss-300 hover:bg-bliss-50/50 flex items-center gap-2">
+                        <span>🕊️ Sympathy & Comfort</span>
+                    </button>
+                    <button onclick="filterByOccasion('Congratulation')" class="occasion-chip shrink-0 px-4 py-2.5 rounded-full text-xs font-semibold transition border border-stone-200 bg-white text-stone-700 hover:border-bliss-300 hover:bg-bliss-50/50 flex items-center gap-2">
+                        <span>🎉 Celebrations</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- MAIN CATALOG CONTAINER -->
+            <div id="catalog-section" class="space-y-4">
+                <!-- Filters Header & Sort Control -->
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-stone-200/80 shadow-sm">
+                    <div class="flex items-center gap-2 text-stone-600 text-xs sm:text-sm">
+                        <span id="product-count" class="font-bold text-stone-900">12</span> bouquets found
+                    </div>
+                    
+                    <div class="flex items-center justify-between sm:justify-end gap-3">
+                        <!-- Price Range Select -->
+                        <select id="price-filter" onchange="applyFilters()" class="bg-stone-50 border border-stone-200 text-stone-700 text-xs rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-botanical-500/20">
+                            <option value="all">All Prices</option>
+                            <option value="under50">Under $50</option>
+                            <option value="50to100">$50 to $100</option>
+                            <option value="above100">$100+</option>
+                        </select>
+
+                        <!-- Sort Select -->
+                        <select id="sort-filter" onchange="applyFilters()" class="bg-stone-50 border border-stone-200 text-stone-700 text-xs rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-botanical-500/20">
+                            <option value="featured">Featured First</option>
+                            <option value="price-low">Price: Low to High</option>
+                            <option value="price-high">Price: High to Low</option>
+                            <option value="rating">Top Rated</option>
+                        </select>
+
+                        <!-- Grid/List View Switcher -->
+                        <div class="flex items-center bg-stone-100 p-1 rounded-xl">
+                            <button id="view-grid-btn" onclick="setCatalogLayout('grid')" class="p-1.5 rounded-lg text-stone-800 bg-white shadow-sm transition">
+                                <i data-lucide="grid" class="w-4 h-4"></i>
+                            </button>
+                            <button id="view-list-btn" onclick="setCatalogLayout('list')" class="p-1.5 rounded-lg text-stone-400 hover:text-stone-800 transition">
+                                <i data-lucide="list" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PRODUCT CARDS GRID -->
+                <div id="product-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                    <!-- Dynamic Product Cards injected here by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 2: CUSTOM BOUQUET BUILDER ("Build Your Bliss") -->
+        <div id="tab-custom-builder" class="hidden space-y-6">
+            <div class="bg-white rounded-3xl p-4 sm:p-8 border border-stone-200/80 shadow-md">
+                <div class="max-w-2xl mx-auto text-center space-y-2 mb-6">
+                    <span class="text-xs uppercase tracking-widest text-bliss-600 font-bold">Interactive Studio</span>
+                    <h2 class="text-2xl sm:text-4xl font-serif font-bold text-stone-900">Build Your Custom Bliss</h2>
+                    <p class="text-xs sm:text-sm text-stone-600">Handpick every element of your arrangement. Live estimated price updates automatically!</p>
+                </div>
+
+                <!-- WIZARD STEPS NAV -->
+                <div class="flex justify-between items-center mb-8 relative max-w-xl mx-auto px-4">
+                    <div class="absolute left-6 right-6 top-1/2 -translate-y-1/2 h-0.5 bg-stone-200 z-0"></div>
+                    <div id="builder-step-line" class="absolute left-6 top-1/2 -translate-y-1/2 h-0.5 bg-botanical-600 z-0 transition-all duration-300" style="width: 0%"></div>
+                    
+                    <button onclick="goToBuilderStep(1)" id="step-btn-1" class="step-nav-btn relative z-10 w-9 h-9 rounded-full bg-botanical-600 text-white font-bold text-xs flex items-center justify-center ring-4 ring-white shadow">1</button>
+                    <button onclick="goToBuilderStep(2)" id="step-btn-2" class="step-nav-btn relative z-10 w-9 h-9 rounded-full bg-stone-200 text-stone-600 font-bold text-xs flex items-center justify-center ring-4 ring-white">2</button>
+                    <button onclick="goToBuilderStep(3)" id="step-btn-3" class="step-nav-btn relative z-10 w-9 h-9 rounded-full bg-stone-200 text-stone-600 font-bold text-xs flex items-center justify-center ring-4 ring-white">3</button>
+                    <button onclick="goToBuilderStep(4)" id="step-btn-4" class="step-nav-btn relative z-10 w-9 h-9 rounded-full bg-stone-200 text-stone-600 font-bold text-xs flex items-center justify-center ring-4 ring-white">4</button>
+                </div>
+
+                <!-- BUILDER CONTENT & PREVIEW SPLIT -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                    <!-- LEFT: STEP FORMS -->
+                    <div class="lg:col-span-7 space-y-6">
+                        <!-- STEP 1: BASE / VASE SELECT -->
+                        <div id="builder-step-1" class="builder-step space-y-4">
+                            <h3 class="font-serif text-lg font-bold text-stone-900 flex items-center gap-2">
+                                <span>Step 1: Choose Vessel & Style</span>
+                            </h3>
+                            <div class="grid grid-cols-2 gap-3" id="vessel-options">
+                                <!-- Options dynamically rendered -->
+                            </div>
+                        </div>
+
+                        <!-- STEP 2: MAIN FLOWERS -->
+                        <div id="builder-step-2" class="builder-step hidden space-y-4">
+                            <h3 class="font-serif text-lg font-bold text-stone-900">Step 2: Choose Primary Stems</h3>
+                            <p class="text-xs text-stone-500">Pick up to 3 flower types for your arrangement.</p>
+                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3" id="flower-options">
+                                <!-- Options dynamically rendered -->
+                            </div>
+                        </div>
+
+                        <!-- STEP 3: GREENERY & ACCENTS -->
+                        <div id="builder-step-3" class="builder-step hidden space-y-4">
+                            <h3 class="font-serif text-lg font-bold text-stone-900">Step 3: Add Foliage & Ribbon Accent</h3>
+                            <div class="space-y-3">
+                                <label class="block text-xs font-semibold text-stone-700">Select Greenery Fillers</label>
+                                <div class="grid grid-cols-2 gap-3" id="greenery-options"></div>
+                            </div>
+
+                            <div class="space-y-3 pt-2">
+                                <label class="block text-xs font-semibold text-stone-700">Select Satin Ribbon Color</label>
+                                <div class="flex gap-3" id="ribbon-options">
+                                    <!-- Ribbon circles -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- STEP 4: CARD & WRAPPING -->
+                        <div id="builder-step-4" class="builder-step hidden space-y-4">
+                            <h3 class="font-serif text-lg font-bold text-stone-900">Step 4: Personal Message & Final Touch</h3>
+                            <div class="space-y-2">
+                                <label class="block text-xs font-semibold text-stone-700">Greeting Card Note</label>
+                                <textarea id="custom-card-text" rows="3" oninput="updateCardPreview()" placeholder="Write your heartfelt note here..." class="w-full text-xs sm:text-sm p-3 border border-stone-200 rounded-xl focus:ring-2 focus:ring-botanical-500/20 focus:outline-none"></textarea>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="block text-xs font-semibold text-stone-700">Recipient Name</label>
+                                <input type="text" id="custom-recipient-name" oninput="updateCardPreview()" placeholder="e.g. Dearest Sophia" class="w-full text-xs sm:text-sm p-2.5 border border-stone-200 rounded-xl">
+                            </div>
+                        </div>
+
+                        <!-- BUILDER NAV BUTTONS -->
+                        <div class="flex items-center justify-between pt-4 border-t border-stone-100">
+                            <button id="builder-prev-btn" onclick="changeBuilderStep(-1)" class="px-5 py-2.5 rounded-full border border-stone-200 text-stone-600 text-xs font-semibold hover:bg-stone-50 disabled:opacity-30">Previous</button>
+                            <button id="builder-next-btn" onclick="changeBuilderStep(1)" class="px-6 py-2.5 rounded-full bg-botanical-700 text-white text-xs font-semibold hover:bg-botanical-800 active-bounce flex items-center gap-1.5">
+                                <span>Next Step</span>
+                                <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- RIGHT: LIVE PREVIEW & SUMMARY CARD -->
+                    <div class="lg:col-span-5 bg-stone-50 p-5 rounded-2xl border border-stone-200 space-y-4 sticky top-20">
+                        <div class="flex items-center justify-between border-b border-stone-200/80 pb-3">
+                            <h4 class="font-serif font-bold text-stone-900">Arrangement Summary</h4>
+                            <span class="text-xs bg-bliss-100 text-bliss-700 font-bold px-2.5 py-1 rounded-full">Live Preview</span>
+                        </div>
+
+                        <!-- Visualizer Box -->
+                        <div class="relative bg-white h-52 rounded-xl border border-stone-200/60 overflow-hidden flex items-center justify-center p-4">
+                            <div id="builder-visualizer" class="text-center space-y-2">
+                                <i data-lucide="flower" class="w-16 h-16 mx-auto text-bliss-400 animate-pulse"></i>
+                                <p class="text-xs text-stone-400 font-medium">Configure your bouquet elements</p>
+                            </div>
+                        </div>
+
+                        <!-- Dynamic Ingredients List -->
+                        <div class="space-y-2 text-xs">
+                            <div class="flex justify-between text-stone-600">
+                                <span>Vessel:</span>
+                                <strong id="summary-vessel" class="text-stone-800">Classic Glass Vase</strong>
+                            </div>
+                            <div class="flex justify-between text-stone-600">
+                                <span>Flowers:</span>
+                                <strong id="summary-flowers" class="text-stone-800">None selected</strong>
+                            </div>
+                            <div class="flex justify-between text-stone-600">
+                                <span>Foliage & Ribbon:</span>
+                                <strong id="summary-accents" class="text-stone-800">Eucalyptus (Blush Ribbon)</strong>
+                            </div>
+                        </div>
+
+                        <!-- Total Price & Add to Cart -->
+                        <div class="pt-3 border-t border-stone-200 flex items-center justify-between">
+                            <div>
+                                <span class="text-[10px] text-stone-400 block uppercase font-bold tracking-wider">Estimated Total</span>
+                                <span id="builder-total-price" class="text-2xl font-bold font-serif text-botanical-700">$45.00</span>
+                            </div>
+                            <button onclick="addCustomBouquetToCart()" class="px-5 py-3 rounded-xl bg-bliss-600 hover:bg-bliss-700 text-white font-bold text-xs transition shadow-md active-bounce flex items-center gap-2">
+                                <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+                                <span>Add Arrangement</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 3: FAVORITES / WISHLIST -->
+        <div id="tab-favorites" class="hidden space-y-6">
+            <div class="flex items-center justify-between border-b border-stone-200 pb-4">
+                <div>
+                    <h2 class="font-serif text-2xl font-bold text-stone-900">Your Saved Blooms</h2>
+                    <p class="text-xs text-stone-500">Items you've bookmarked for special moments.</p>
+                </div>
+                <button onclick="clearWishlist()" class="text-xs text-bliss-600 hover:underline">Clear Wishlist</button>
+            </div>
+            
+            <div id="wishlist-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <!-- Wishlist items injected by JS -->
+            </div>
+        </div>
+
+        <!-- SECTION 4: OCCASIONS EXPLORER -->
+        <div id="tab-occasions" class="hidden space-y-6">
+            <div class="text-center max-w-xl mx-auto space-y-2 py-4">
+                <h2 class="font-serif text-3xl font-bold text-stone-900">Celebrate Every Moment</h2>
+                <p class="text-xs sm:text-sm text-stone-600">Explore floral arrangements thoughtfully tailored for life's unforgettable occasions.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Occasion Cards -->
+                <div onclick="filterByOccasion('Romance'); switchTab('home')" class="group relative rounded-2xl overflow-hidden h-64 cursor-pointer shadow-md">
+                    <img src="https://images.unsplash.com/photo-1518895949257-7621c3c786d7?auto=format&fit=crop&w=600&q=80" alt="Romance" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-t from-stone-950/80 via-transparent to-transparent flex flex-col justify-end p-6 text-white">
+                        <span class="text-xs font-bold uppercase tracking-wider text-bliss-300">Collection</span>
+                        <h3 class="text-2xl font-serif font-bold">Romance & Passion</h3>
+                        <p class="text-xs text-stone-200 mt-1">Deep red roses, velvety tulips & sensual scents.</p>
+                    </div>
+                </div>
+
+                <div onclick="filterByOccasion('Birthday'); switchTab('home')" class="group relative rounded-2xl overflow-hidden h-64 cursor-pointer shadow-md">
+                    <img src="https://images.unsplash.com/photo-1526047932273-341f2a7631f9?auto=format&fit=crop&w=600&q=80" alt="Birthday" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-t from-stone-950/80 via-transparent to-transparent flex flex-col justify-end p-6 text-white">
+                        <span class="text-xs font-bold uppercase tracking-wider text-bliss-300">Vibrant & Bright</span>
+                        <h3 class="text-2xl font-serif font-bold">Birthday Celebrations</h3>
+                        <p class="text-xs text-stone-200 mt-1">Sunflowers, colorful ranunculus & joyous hues.</p>
+                    </div>
+                </div>
+
+                <div onclick="filterByOccasion('Sympathy'); switchTab('home')" class="group relative rounded-2xl overflow-hidden h-64 cursor-pointer shadow-md">
+                    <img src="https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&w=600&q=80" alt="Sympathy" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-t from-stone-950/80 via-transparent to-transparent flex flex-col justify-end p-6 text-white">
+                        <span class="text-xs font-bold uppercase tracking-wider text-bliss-300">Serene & Pure</span>
+                        <h3 class="text-2xl font-serif font-bold">Sympathy & Grace</h3>
+                        <p class="text-xs text-stone-200 mt-1">White lilies, gentle eucalyptus & soft hydrangeas.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- MOBILE BOTTOM NAVIGATION BAR -->
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-stone-200/80 z-40 px-3 py-2 flex items-center justify-around shadow-lg">
+        <button onclick="switchTab('home')" id="mobile-nav-home" class="mobile-nav-link flex flex-col items-center gap-1 text-botanical-700">
+            <i data-lucide="store" class="w-5 h-5"></i>
+            <span class="text-[10px] font-semibold">Shop</span>
+        </button>
+        <button onclick="switchTab('custom-builder')" id="mobile-nav-builder" class="mobile-nav-link flex flex-col items-center gap-1 text-stone-400">
+            <i data-lucide="wand-2" class="w-5 h-5"></i>
+            <span class="text-[10px] font-semibold">Custom</span>
+        </button>
+        <button onclick="switchTab('occasions')" id="mobile-nav-occasions" class="mobile-nav-link flex flex-col items-center gap-1 text-stone-400">
+            <i data-lucide="sparkles" class="w-5 h-5"></i>
+            <span class="text-[10px] font-semibold">Occasions</span>
+        </button>
+        <button onclick="switchTab('favorites')" id="mobile-nav-favorites" class="mobile-nav-link flex flex-col items-center gap-1 text-stone-400 relative">
+            <i data-lucide="heart" class="w-5 h-5"></i>
+            <span class="text-[10px] font-semibold">Saved</span>
+            <span id="mobile-fav-dot" class="hidden absolute top-0 right-3 w-2 h-2 rounded-full bg-bliss-500"></span>
+        </button>
+        <button onclick="toggleCartDrawer(true)" class="mobile-nav-link flex flex-col items-center gap-1 text-stone-400 relative">
+            <div class="relative">
+                <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+                <span id="mobile-cart-badge" class="absolute -top-1.5 -right-2 bg-bliss-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">0</span>
+            </div>
+            <span class="text-[10px] font-semibold">Cart</span>
+        </button>
+    </nav>
+
+    <!-- QUICK VIEW PRODUCT MODAL -->
+    <div id="quickview-modal" class="fixed inset-0 z-50 hidden bg-stone-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+        <div class="bg-white rounded-3xl max-w-2xl w-full overflow-hidden shadow-2xl relative animate-in fade-in zoom-in-95 duration-200">
+            <!-- Close Button -->
+            <button onclick="closeQuickView()" class="absolute top-3 right-3 z-10 w-9 h-9 bg-white/80 hover:bg-white rounded-full flex items-center justify-center text-stone-700 shadow-md">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <div id="qv-modal-content" class="grid grid-cols-1 sm:grid-cols-2">
+                <!-- Dynamic Content Injected by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- SHOPPING CART SLIDE-OVER DRAWER -->
+    <div id="cart-drawer-overlay" onclick="toggleCartDrawer(false)" class="fixed inset-0 z-50 bg-stone-900/50 backdrop-blur-xs hidden transition-opacity duration-300"></div>
+    <div id="cart-drawer" class="fixed top-0 right-0 bottom-0 w-full max-w-md bg-white z-50 shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col">
+        <!-- Cart Header -->
+        <div class="p-4 border-b border-stone-200 flex items-center justify-between bg-stone-50">
+            <div class="flex items-center gap-2">
+                <i data-lucide="shopping-bag" class="w-5 h-5 text-botanical-700"></i>
+                <h3 class="font-serif text-lg font-bold text-stone-900">Your Basket</h3>
+            </div>
+            <button onclick="toggleCartDrawer(false)" class="p-2 text-stone-400 hover:text-stone-700 rounded-full">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+
+        <!-- Free Delivery Progress Bar -->
+        <div class="bg-botanical-50 p-3 border-b border-botanical-100">
+            <div class="flex justify-between text-xs font-semibold mb-1 text-botanical-900">
+                <span id="free-shipping-text">Add $35 more for FREE delivery!</span>
+                <span id="free-shipping-percent">60%</span>
+            </div>
+            <div class="w-full h-2 bg-botanical-200 rounded-full overflow-hidden">
+                <div id="free-shipping-bar" class="h-full bg-botanical-600 transition-all duration-300" style="width: 60%"></div>
+            </div>
+        </div>
+
+        <!-- Cart Items List -->
+        <div id="cart-items-container" class="flex-1 overflow-y-auto p-4 space-y-4 divide-y divide-stone-100">
+            <!-- Cart items injected here -->
+        </div>
+
+        <!-- Cart Footer / Checkout -->
+        <div class="p-4 border-t border-stone-200 bg-stone-50 space-y-3">
+            <!-- Promo Code Input -->
+            <div class="flex gap-2">
+                <input type="text" id="promo-code-input" placeholder="Promo code (e.g. BLOOM10)" class="uppercase flex-1 text-xs px-3 py-2 rounded-xl border border-stone-200 focus:outline-none focus:ring-1 focus:ring-botanical-500">
+                <button onclick="applyPromoCode()" class="px-3 py-2 bg-stone-800 text-white text-xs font-semibold rounded-xl hover:bg-stone-900 active-bounce">Apply</button>
+            </div>
+            <div id="promo-discount-row" class="hidden flex justify-between text-xs text-bliss-600 font-bold">
+                <span>Discount Applied (10% OFF):</span>
+                <span id="discount-amount">-$0.00</span>
+            </div>
+
+            <!-- Total Price Summary -->
+            <div class="space-y-1 text-xs text-stone-600">
+                <div class="flex justify-between">
+                    <span>Subtotal</span>
+                    <span id="cart-subtotal" class="font-bold text-stone-900">$0.00</span>
+                </div>
+                <div class="flex justify-between">
+                    <span>Est. Delivery</span>
+                    <span id="cart-delivery-cost" class="font-medium">$5.99</span>
+                </div>
+                <div class="flex justify-between text-sm font-serif font-bold text-stone-900 pt-2 border-t border-stone-200">
+                    <span>Total</span>
+                    <span id="cart-final-total" class="text-botanical-700 text-base">$0.00</span>
+                </div>
+            </div>
+
+            <button onclick="openCheckoutModal()" id="cart-checkout-btn" class="w-full py-3.5 bg-bliss-600 hover:bg-bliss-700 text-white font-bold rounded-2xl shadow-lg transition active-bounce flex items-center justify-center gap-2">
+                <span>Proceed to Delivery & Checkout</span>
+                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- SIMULATED MOBILE CHECKOUT & DELIVERY PICKER MODAL -->
+    <div id="checkout-modal" class="fixed inset-0 z-50 hidden bg-stone-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+        <div class="bg-white rounded-3xl max-w-xl w-full overflow-hidden shadow-2xl relative my-8">
+            <!-- Modal Header -->
+            <div class="bg-botanical-800 text-white p-4 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="truck" class="w-5 h-5 text-bliss-300"></i>
+                    <h3 class="font-serif font-bold text-lg">Delivery & Checkout</h3>
+                </div>
+                <button onclick="closeCheckoutModal()" class="text-stone-300 hover:text-white">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <form id="checkout-form" onsubmit="processOrder(event)" class="p-5 space-y-5 max-h-[80vh] overflow-y-auto">
+                <!-- Step 1: Recipient & Address -->
+                <div class="space-y-3">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-botanical-700 border-b border-stone-200 pb-1">1. Recipient Information</h4>
+                    <div class="grid grid-cols-2 gap-3">
+                        <input type="text" required placeholder="Recipient Full Name" class="text-xs p-2.5 rounded-xl border border-stone-200 w-full">
+                        <input type="tel" required placeholder="Recipient Phone" class="text-xs p-2.5 rounded-xl border border-stone-200 w-full">
+                    </div>
+                    <input type="text" required placeholder="Delivery Street Address" class="text-xs p-2.5 rounded-xl border border-stone-200 w-full">
+                </div>
+
+                <!-- Step 2: Date & Slot Picker -->
+                <div class="space-y-3">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-botanical-700 border-b border-stone-200 pb-1">2. Delivery Date & Time Slot</h4>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[10px] font-bold text-stone-500 mb-1">Select Date</label>
+                            <input type="date" id="delivery-date-input" required class="text-xs p-2.5 rounded-xl border border-stone-200 w-full">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-stone-500 mb-1">Select Time Window</label>
+                            <select required class="text-xs p-2.5 rounded-xl border border-stone-200 w-full bg-white">
+                                <option value="morning">Morning (9:00 AM - 1:00 PM)</option>
+                                <option value="afternoon">Afternoon (1:00 PM - 5:00 PM)</option>
+                                <option value="evening">Evening (5:00 PM - 8:00 PM)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Card Message & Live Digital Preview -->
+                <div class="space-y-3">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-botanical-700 border-b border-stone-200 pb-1">3. Complimentary Gift Card</h4>
+                    <textarea id="checkout-gift-note" oninput="updateLiveGiftCard()" rows="2" placeholder="Write a custom message for the card..." class="text-xs p-2.5 rounded-xl border border-stone-200 w-full"></textarea>
+                    
+                    <!-- Live Digital Gift Card Preview -->
+                    <div class="bg-cream border border-stone-300 p-4 rounded-2xl shadow-inner relative overflow-hidden">
+                        <div class="absolute -right-4 -bottom-4 text-bliss-200/50">
+                            <i data-lucide="flower-2" class="w-24 h-24"></i>
+                        </div>
+                        <span class="text-[10px] uppercase tracking-widest text-botanical-700 font-bold block mb-1">Bloom & Bliss Greeting Card</span>
+                        <p id="live-card-text" class="font-handwriting text-stone-800 text-lg leading-snug">"Wishing you endless happiness and vibrant smiles!"</p>
+                    </div>
+                </div>
+
+                <!-- Step 4: Payment Selection -->
+                <div class="space-y-3">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-botanical-700 border-b border-stone-200 pb-1">4. Payment Method</h4>
+                    <div class="grid grid-cols-2 gap-3">
+                        <label class="border border-stone-200 p-3 rounded-xl flex items-center gap-2 cursor-pointer hover:border-botanical-500">
+                            <input type="radio" name="payment" value="applepay" checked class="text-botanical-600">
+                            <span class="text-xs font-semibold"> Apple Pay</span>
+                        </label>
+                        <label class="border border-stone-200 p-3 rounded-xl flex items-center gap-2 cursor-pointer hover:border-botanical-500">
+                            <input type="radio" name="payment" value="card" class="text-botanical-600">
+                            <span class="text-xs font-semibold">💳 Credit Card</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="pt-3 border-t border-stone-200">
+                    <button type="submit" class="w-full py-4 bg-botanical-700 hover:bg-botanical-800 text-white font-bold rounded-2xl shadow-lg transition active-bounce flex items-center justify-center gap-2">
+                        <i data-lucide="check-circle" class="w-5 h-5"></i>
+                        <span id="pay-button-text">Place Order Now</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- JAVASCRIPT LOGIC & STATE MANAGEMENT -->
+    <script>
+        // PRODUCTS DATABASE (High Quality Floral Unsplash Assets)
+        const PRODUCTS = [
+            {
+                id: 'b1',
+                name: 'Velvet Romance Bouquet',
+                category: 'Romance',
+                price: 89.00,
+                rating: 4.9,
+                reviews: 128,
+                image: 'https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&w=600&q=80',
+                description: 'A luxurious arrangement of premium crimson roses, dark pink peonies, and lush eucalyptus stems.',
+                care: 'Trim stems at 45° angle every 2 days. Keep water fresh and away from direct sunlight.',
+                tags: ['Roses', 'Peonies', 'Best Seller']
+            },
+            {
+                id: 'b2',
+                name: 'Sunrise Bliss Tulips',
+                category: 'Birthday',
+                price: 48.00,
+                rating: 4.8,
+                reviews: 94,
+                image: 'https://images.unsplash.com/photo-1526047932273-341f2a7631f9?auto=format&fit=crop&w=600&q=80',
+                description: 'Vibrant Dutch tulips in sunset coral, peach, and soft yellow hues to brighten anyone\'s day.',
+                care: 'Tulips continue to grow in water! Keep in cool water with floral food provided.',
+                tags: ['Tulips', 'Spring']
+            },
+            {
+                id: 'b3',
+                name: 'Pure Grace White Lilies',
+                category: 'Sympathy',
+                price: 75.00,
+                rating: 4.9,
+                reviews: 62,
+                image: 'https://images.unsplash.com/photo-1582794543139-8ac9cb0f7b11?auto=format&fit=crop&w=600&q=80',
+                description: 'Elegant oriental white lilies paired with delicate baby\'s breath and silver dollar eucalyptus.',
+                care: 'Remove pollen stems carefully as buds open to prolong flower longevity.',
+                tags: ['Lilies', 'Sympathy']
+            },
+            {
+                id: 'b4',
+                name: 'Pastel Meadow Dream',
+                category: 'Anniversary',
+                price: 95.00,
+                rating: 5.0,
+                reviews: 156,
+                image: 'https://images.unsplash.com/photo-1563241527-3004b7be0ffd?auto=format&fit=crop&w=600&q=80',
+                description: 'An artisanal garden blend of blush ranunculus, lavender spray roses, and wild chamomile.',
+                care: 'Change vase water every 48 hours and add provided plant preservative.',
+                tags: ['Ranunculus', 'Roses']
+            },
+            {
+                id: 'b5',
+                name: 'Golden Hour Sunflowers',
+                category: 'Congratulation',
+                price: 52.00,
+                rating: 4.7,
+                reviews: 83,
+                image: 'https://images.unsplash.com/photo-1597848212624-a19eb35e2651?auto=format&fit=crop&w=600&q=80',
+                description: 'Radiant oversized sunflowers bundled with golden solidago and ruscus greens.',
+                care: 'Sunflowers are heavy drinkers—ensure vase is filled 3/4 with fresh cool water.',
+                tags: ['Sunflowers', 'Bright']
+            },
+            {
+                id: 'b6',
+                name: 'Blush Peony Elegance',
+                category: 'Romance',
+                price: 110.00,
+                rating: 4.9,
+                reviews: 210,
+                image: 'https://images.unsplash.com/photo-1527061011665-3652c757a4d4?auto=format&fit=crop&w=600&q=80',
+                description: 'Ultra-rare fluffy blush Sarah Bernhardt peonies wrapped in signature tissue paper.',
+                care: 'Keep in warm water initially to encourage tight buds to bloom into full fluffiness.',
+                tags: ['Peonies', 'Luxury']
+            },
+            {
+                id: 'b7',
+                name: 'Wildflower Harmony',
+                category: 'Birthday',
+                price: 64.00,
+                rating: 4.6,
+                reviews: 45,
+                image: 'https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=600&q=80',
+                description: 'Rustic arrangement with blue thistles, yellow Craspedia, lavender, and field greenery.',
+                care: 'Durable arrangement! Display out of direct sunlight for maximum lifespan.',
+                tags: ['Wildflowers', 'Rustic']
+            },
+            {
+                id: 'b8',
+                name: 'Sweet Orchid Grace',
+                category: 'Anniversary',
+                price: 125.00,
+                rating: 4.9,
+                reviews: 77,
+                image: 'https://images.unsplash.com/photo-1518895949257-7621c3c786d7?auto=format&fit=crop&w=600&q=80',
+                description: 'Exquisite cascading Phalaenopsis orchid stems set in an artisan ceramic vessel.',
+                care: 'Light misting on petals daily. Water roots lightly once a week.',
+                tags: ['Orchids', 'Vase Included']
+            }
+        ];
+
+        // GLOBAL APP STATE
+        let state = {
+            cart: [],
+            wishlist: [],
+            activeTab: 'home',
+            activeOccasion: 'all',
+            catalogLayout: 'grid',
+            promoApplied: false,
+            discountRate: 0,
+            builder: {
+                step: 1,
+                vessel: { name: 'Classic Glass Vase', price: 15 },
+                flowers: [],
+                greenery: { name: 'Silver Dollar Eucalyptus', price: 8 },
+                ribbon: { name: 'Blush Pink Ribbon', color: '#f7d1d6' },
+                cardText: '',
+                recipientName: ''
+            }
+        };
+
+        // BUILDER DATA OPTIONS
+        const BUILDER_DATA = {
+            vessels: [
+                { id: 'v1', name: 'Classic Glass Vase', price: 15, icon: 'wine' },
+                { id: 'v2', name: 'Artisan Ceramic Pot', price: 22, icon: 'box' },
+                { id: 'v3', name: 'Rustic Kraft Paper Wrap', price: 5, icon: 'package' },
+                { id: 'v4', name: 'Luxury Velvet Box', price: 28, icon: 'archive' }
+            ],
+            flowers: [
+                { id: 'f1', name: 'Grand Red Roses', price: 12, unit: '3 stems' },
+                { id: 'f2', name: 'Blush Peonies', price: 16, unit: '2 stems' },
+                { id: 'f3', name: 'White Lilies', price: 10, unit: '2 stems' },
+                { id: 'f4', name: 'Coral Tulips', price: 9, unit: '4 stems' },
+                { id: 'f5', name: 'Golden Sunflowers', price: 8, unit: '2 stems' },
+                { id: 'f6', name: 'Purple Hydrangea', price: 11, unit: '1 stem' }
+            ],
+            greenery: [
+                { id: 'g1', name: 'Silver Dollar Eucalyptus', price: 8 },
+                { id: 'g2', name: 'Italian Ruscus Leaves', price: 6 },
+                { id: 'g3', name: 'Baby\'s Breath Accents', price: 7 },
+                { id: 'g4', name: 'Fresh Lavender Sprigs', price: 9 }
+            ],
+            ribbons: [
+                { id: 'r1', name: 'Blush Pink Satin', color: '#f7d1d6' },
+                { id: 'r2', name: 'Botanical Sage Green', color: '#adcaad' },
+                { id: 'r3', name: 'Cream Silk', color: '#FAF7F2' },
+                { id: 'r4', name: 'Crimson Red', color: '#c33950' }
+            ]
+        };
+
+        // ON INIT
+        window.addEventListener('DOMContentLoaded', () => {
+            // Set today date as default in checkout picker
+            const today = new Date().toISOString().split('T')[0];
+            const dateInput = document.getElementById('delivery-date-input');
+            if (dateInput) dateInput.min = today; dateInput.value = today;
+
+            renderCatalog();
+            initCustomBuilder();
+            updateCartBadge();
+            lucide.createIcons();
+
+            // Setup Search Handler
+            const searchInput = document.getElementById('global-search');
+            searchInput.addEventListener('input', (e) => {
+                const term = e.target.value.toLowerCase();
+                document.getElementById('clear-search').classList.toggle('hidden', term === '');
+                filterProductsBySearch(term);
+            });
+            document.getElementById('clear-search').addEventListener('click', () => {
+                searchInput.value = '';
+                document.getElementById('clear-search').classList.add('hidden');
+                renderCatalog();
+            });
+        });
+
+        // TAB SWITCHER LOGIC
+        function switchTab(tabId) {
+            state.activeTab = tabId;
+            ['home', 'custom-builder', 'favorites', 'occasions'].forEach(id => {
+                const el = document.getElementById(`tab-${id}`);
+                if (el) el.classList.toggle('hidden', id !== tabId);
+            });
+
+            // Update mobile nav highlight
+            document.querySelectorAll('.mobile-nav-link').forEach(btn => btn.classList.add('text-stone-400'));
+            const activeMobileBtn = document.getElementById(`mobile-nav-${tabId === 'home' ? 'home' : tabId.replace('custom-', '')}`);
+            if (activeMobileBtn) {
+                activeMobileBtn.classList.remove('text-stone-400');
+                activeMobileBtn.classList.add('text-botanical-700');
+            }
+
+            if (tabId === 'favorites') renderWishlist();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // RENDER CATALOG PRODUCTS
+        function renderCatalog(productsToRender = PRODUCTS) {
+            const grid = document.getElementById('product-grid');
+            document.getElementById('product-count').textContent = productsToRender.length;
+
+            if (productsToRender.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full py-12 text-center space-y-3">
+                        <i data-lucide="search-x" class="w-12 h-12 text-stone-300 mx-auto"></i>
+                        <p class="text-stone-500 font-medium">No floral arrangements found matching your criteria.</p>
+                        <button onclick="resetFilters()" class="px-4 py-2 bg-botanical-700 text-white rounded-full text-xs font-semibold">Reset Filters</button>
+                    </div>
+                `;
+                lucide.createIcons();
+                return;
+            }
+
+            grid.className = state.catalogLayout === 'grid' 
+                ? 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6' 
+                : 'flex flex-col gap-4';
+
+            grid.innerHTML = productsToRender.map(product => {
+                const isFav = state.wishlist.some(item => item.id === product.id);
+
+                if (state.catalogLayout === 'grid') {
+                    return `
+                        <div class="group bg-white rounded-2xl overflow-hidden border border-stone-200/80 shadow-sm hover:shadow-md transition-all flex flex-col">
+                            <div class="relative aspect-square overflow-hidden bg-stone-100">
+                                <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                                <button onclick="toggleWishlist('${product.id}')" class="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-white/80 backdrop-blur-md flex items-center justify-center text-stone-600 hover:text-bliss-600 transition shadow-sm active-bounce">
+                                    <i data-lucide="heart" class="w-4 h-4 ${isFav ? 'fill-bliss-500 text-bliss-500' : ''}"></i>
+                                </button>
+                                <span class="absolute bottom-2.5 left-2.5 bg-stone-900/70 backdrop-blur-md text-white text-[10px] font-semibold px-2 py-0.5 rounded-full">
+                                    ${product.category}
+                                </span>
+                            </div>
+
+                            <div class="p-3.5 flex-1 flex flex-col justify-between space-y-2">
+                                <div>
+                                    <div class="flex items-center gap-1 text-amber-500 text-[11px] font-bold">
+                                        <i data-lucide="star" class="w-3 h-3 fill-current"></i>
+                                        <span>${product.rating}</span>
+                                        <span class="text-stone-400 font-normal">(${product.reviews})</span>
+                                    </div>
+                                    <h3 onclick="openQuickView('${product.id}')" class="font-serif font-bold text-stone-900 text-sm sm:text-base leading-snug hover:text-botanical-700 cursor-pointer line-clamp-1 mt-0.5">
+                                        ${product.name}
+                                    </h3>
+                                </div>
+
+                                <div class="flex items-center justify-between pt-1">
+                                    <span class="font-bold text-stone-900 text-sm sm:text-base">$${product.price.toFixed(2)}</span>
+                                    <button onclick="addToCart('${product.id}')" class="px-3 py-1.5 rounded-xl bg-botanical-100 text-botanical-800 hover:bg-botanical-700 hover:text-white font-semibold text-xs transition active-bounce flex items-center gap-1">
+                                        <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                                        <span>Add</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    return `
+                        <div class="bg-white rounded-2xl p-3 border border-stone-200 flex gap-4 items-center shadow-sm">
+                            <img src="${product.image}" class="w-24 h-24 rounded-xl object-cover shrink-0">
+                            <div class="flex-1 space-y-1">
+                                <span class="text-[10px] text-bliss-600 font-bold uppercase">${product.category}</span>
+                                <h3 onclick="openQuickView('${product.id}')" class="font-serif font-bold text-stone-900 text-base cursor-pointer hover:underline">${product.name}</h3>
+                                <p class="text-xs text-stone-500 line-clamp-1">${product.description}</p>
+                                <span class="font-bold text-stone-900 text-sm block">$${product.price.toFixed(2)}</span>
+                            </div>
+                            <button onclick="addToCart('${product.id}')" class="p-3 bg-botanical-700 text-white rounded-xl active-bounce">
+                                <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    `;
+                }
+            }).join('');
+
+            lucide.createIcons();
+        }
+
+        // FILTER & SORT CONTROLS
+        function filterByOccasion(occasion) {
+            state.activeOccasion = occasion;
+            document.querySelectorAll('.occasion-chip').forEach(chip => {
+                const isActive = chip.textContent.includes(occasion) || (occasion === 'all' && chip.textContent.includes('All'));
+                chip.classList.toggle('bg-botanical-700', isActive);
+                chip.classList.toggle('text-white', isActive);
+                chip.classList.toggle('bg-white', !isActive);
+                chip.classList.toggle('text-stone-700', !isActive);
+            });
+            applyFilters();
+        }
+
+        function applyFilters() {
+            let filtered = [...PRODUCTS];
+
+            // Category Filter
+            if (state.activeOccasion !== 'all') {
+                filtered = filtered.filter(p => p.category === state.activeOccasion);
+            }
+
+            // Price Filter
+            const priceVal = document.getElementById('price-filter').value;
+            if (priceVal === 'under50') filtered = filtered.filter(p => p.price < 50);
+            else if (priceVal === '50to100') filtered = filtered.filter(p => p.price >= 50 && p.price <= 100);
+            else if (priceVal === 'above100') filtered = filtered.filter(p => p.price > 100);
+
+            // Sorting
+            const sortVal = document.getElementById('sort-filter').value;
+            if (sortVal === 'price-low') filtered.sort((a, b) => a.price - b.price);
+            else if (sortVal === 'price-high') filtered.sort((a, b) => b.price - a.price);
+            else if (sortVal === 'rating') filtered.sort((a, b) => b.rating - a.rating);
+
+            renderCatalog(filtered);
+        }
+
+        function filterProductsBySearch(term) {
+            const filtered = PRODUCTS.filter(p => 
+                p.name.toLowerCase().includes(term) || 
+                p.description.toLowerCase().includes(term) ||
+                p.tags.some(t => t.toLowerCase().includes(term))
+            );
+            renderCatalog(filtered);
+        }
+
+        function resetFilters() {
+            document.getElementById('price-filter').value = 'all';
+            document.getElementById('sort-filter').value = 'featured';
+            document.getElementById('global-search').value = '';
+            filterByOccasion('all');
+        }
+
+        function setCatalogLayout(layout) {
+            state.catalogLayout = layout;
+            document.getElementById('view-grid-btn').classList.toggle('bg-white', layout === 'grid');
+            document.getElementById('view-grid-btn').classList.toggle('text-stone-400', layout !== 'grid');
+            document.getElementById('view-list-btn').classList.toggle('bg-white', layout === 'list');
+            document.getElementById('view-list-btn').classList.toggle('text-stone-400', layout !== 'list');
+            applyFilters();
+        }
+
+        // QUICK VIEW MODAL
+        function openQuickView(productId) {
+            const product = PRODUCTS.find(p => p.id === productId);
+            if (!product) return;
+
+            const modal = document.getElementById('quickview-modal');
+            const container = document.getElementById('qv-modal-content');
+
+            container.innerHTML = `
+                <div class="relative bg-stone-100 aspect-square sm:aspect-auto">
+                    <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover">
+                </div>
+                <div class="p-6 space-y-4 flex flex-col justify-between">
+                    <div class="space-y-2">
+                        <span class="text-xs font-bold uppercase tracking-widest text-bliss-600">${product.category}</span>
+                        <h2 class="font-serif text-2xl font-bold text-stone-900">${product.name}</h2>
+                        <div class="flex items-center gap-2 text-xs text-amber-500 font-bold">
+                            <div class="flex"><i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i></div>
+                            <span>${product.rating}</span>
+                            <span class="text-stone-400">(${product.reviews} verified reviews)</span>
+                        </div>
+                        <p class="text-xs text-stone-600 leading-relaxed pt-2">${product.description}</p>
+                    </div>
+
+                    <!-- Care Tab -->
+                    <div class="bg-botanical-50 p-3 rounded-xl border border-botanical-100">
+                        <div class="flex items-center gap-1.5 text-botanical-800 text-xs font-bold mb-1">
+                            <i data-lucide="sprout" class="w-4 h-4"></i>
+                            <span>Florist Care Instructions</span>
+                        </div>
+                        <p class="text-[11px] text-stone-600">${product.care}</p>
+                    </div>
+
+                    <div class="pt-3 border-t border-stone-200 flex items-center justify-between">
+                        <span class="text-2xl font-bold text-stone-900">$${product.price.toFixed(2)}</span>
+                        <button onclick="addToCart('${product.id}'); closeQuickView();" class="px-6 py-3 bg-botanical-700 hover:bg-botanical-800 text-white font-bold text-xs rounded-xl transition shadow-md active-bounce flex items-center gap-2">
+                            <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+                            <span>Add to Basket</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            modal.classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function closeQuickView() {
+            document.getElementById('quickview-modal').classList.add('hidden');
+        }
+
+        // CUSTOM BOUQUET BUILDER LOGIC
+        function initCustomBuilder() {
+            // Render Vessels
+            const vesselContainer = document.getElementById('vessel-options');
+            vesselContainer.innerHTML = BUILDER_DATA.vessels.map((v, idx) => `
+                <div onclick="selectBuilderVessel('${v.id}')" class="vessel-card border-2 ${idx === 0 ? 'border-botanical-600 bg-botanical-50/50' : 'border-stone-200'} p-3 rounded-2xl cursor-pointer hover:border-botanical-400 transition flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center text-stone-700">
+                        <i data-lucide="${v.icon}" class="w-4 h-4"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-bold text-stone-900">${v.name}</h4>
+                        <span class="text-[11px] text-stone-500">+$${v.price}</span>
+                    </div>
+                </div>
+            `).join('');
+
+            // Render Flowers
+            const flowerContainer = document.getElementById('flower-options');
+            flowerContainer.innerHTML = BUILDER_DATA.flowers.map(f => `
+                <div onclick="toggleBuilderFlower('${f.id}')" id="flower-card-${f.id}" class="flower-card border-2 border-stone-200 p-3 rounded-2xl cursor-pointer hover:border-bliss-300 transition text-center space-y-1">
+                    <span class="text-xs font-bold text-stone-800 block">${f.name}</span>
+                    <span class="text-[10px] text-stone-500 block">${f.unit}</span>
+                    <span class="text-xs font-bold text-bliss-600">+$${f.price}</span>
+                </div>
+            `).join('');
+
+            // Render Greenery
+            const greeneryContainer = document.getElementById('greenery-options');
+            greeneryContainer.innerHTML = BUILDER_DATA.greenery.map((g, idx) => `
+                <label onclick="selectBuilderGreenery('${g.id}')" class="border border-stone-200 p-3 rounded-xl flex items-center justify-between cursor-pointer hover:bg-stone-50">
+                    <span class="text-xs font-semibold text-stone-800">${g.name}</span>
+                    <span class="text-xs text-stone-500">+$${g.price}</span>
+                </label>
+            `).join('');
+
+            // Render Ribbons
+            const ribbonContainer = document.getElementById('ribbon-options');
+            ribbonContainer.innerHTML = BUILDER_DATA.ribbons.map((r, idx) => `
+                <button onclick="selectBuilderRibbon('${r.id}')" title="${r.name}" class="w-8 h-8 rounded-full border-2 border-stone-300 flex items-center justify-center shadow-sm" style="background-color: ${r.color}">
+                </button>
+            `).join('');
+
+            updateBuilderUI();
+        }
+
+        function goToBuilderStep(stepNum) {
+            state.builder.step = stepNum;
+            document.querySelectorAll('.builder-step').forEach((el, idx) => {
+                el.classList.toggle('hidden', idx + 1 !== stepNum);
+            });
+
+            // Update Wizard Line
+            const line = document.getElementById('builder-step-line');
+            line.style.width = `${(stepNum - 1) * 33.3}%`;
+
+            // Update step button styles
+            for (let i = 1; i <= 4; i++) {
+                const btn = document.getElementById(`step-btn-${i}`);
+                if (i <= stepNum) {
+                    btn.classList.add('bg-botanical-600', 'text-white');
+                    btn.classList.remove('bg-stone-200', 'text-stone-600');
+                } else {
+                    btn.classList.remove('bg-botanical-600', 'text-white');
+                    btn.classList.add('bg-stone-200', 'text-stone-600');
+                }
+            }
+
+            document.getElementById('builder-prev-btn').disabled = stepNum === 1;
+            const nextBtnText = document.getElementById('builder-next-btn').querySelector('span');
+            nextBtnText.textContent = stepNum === 4 ? 'Complete Arrangement' : 'Next Step';
+        }
+
+        function changeBuilderStep(delta) {
+            const newStep = state.builder.step + delta;
+            if (newStep >= 1 && newStep <= 4) {
+                goToBuilderStep(newStep);
+            }
+        }
+
+        function selectBuilderVessel(id) {
+            const v = BUILDER_DATA.vessels.find(item => item.id === id);
+            state.builder.vessel = v;
+            updateBuilderUI();
+        }
+
+        function toggleBuilderFlower(id) {
+            const f = BUILDER_DATA.flowers.find(item => item.id === id);
+            const exists = state.builder.flowers.some(item => item.id === id);
+            
+            if (exists) {
+                state.builder.flowers = state.builder.flowers.filter(item => item.id !== id);
+            } else {
+                if (state.builder.flowers.length >= 3) {
+                    showToast('Maximum 3 flower varieties allowed');
+                    return;
+                }
+                state.builder.flowers.push(f);
+            }
+            updateBuilderUI();
+        }
+
+        function selectBuilderGreenery(id) {
+            const g = BUILDER_DATA.greenery.find(item => item.id === id);
+            state.builder.greenery = g;
+            updateBuilderUI();
+        }
+
+        function selectBuilderRibbon(id) {
+            const r = BUILDER_DATA.ribbons.find(item => item.id === id);
+            state.builder.ribbon = r;
+            updateBuilderUI();
+        }
+
+        function updateCardPreview() {
+            state.builder.cardText = document.getElementById('custom-card-text').value;
+            state.builder.recipientName = document.getElementById('custom-recipient-name').value;
+        }
+
+        function updateBuilderUI() {
+            // Calculate Total Price
+            let total = state.builder.vessel.price + state.builder.greenery.price;
+            state.builder.flowers.forEach(f => total += f.price);
+            document.getElementById('builder-total-price').textContent = `$${total.toFixed(2)}`;
+
+            // Summary Texts
+            document.getElementById('summary-vessel').textContent = state.builder.vessel.name;
+            document.getElementById('summary-flowers').textContent = state.builder.flowers.length > 0 
+                ? state.builder.flowers.map(f => f.name).join(', ')
+                : 'None selected';
+            document.getElementById('summary-accents').textContent = `${state.builder.greenery.name} (${state.builder.ribbon.name})`;
+
+            // Flower card highlights
+            BUILDER_DATA.flowers.forEach(f => {
+                const card = document.getElementById(`flower-card-${f.id}`);
+                const isSelected = state.builder.flowers.some(item => item.id === f.id);
+                if (card) {
+                    card.classList.toggle('border-bliss-500', isSelected);
+                    card.classList.toggle('bg-bliss-50/50', isSelected);
+                }
+            });
+        }
+
+        function addCustomBouquetToCart() {
+            if (state.builder.flowers.length === 0) {
+                showToast('Please select at least 1 flower variety!');
+                goToBuilderStep(2);
+                return;
+            }
+
+            let price = state.builder.vessel.price + state.builder.greenery.price;
+            state.builder.flowers.forEach(f => price += f.price);
+
+            const customItem = {
+                id: 'custom-' + Date.now(),
+                name: 'Custom Bliss Arrangement',
+                price: price,
+                image: 'https://images.unsplash.com/photo-1563241527-3004b7be0ffd?auto=format&fit=crop&w=400&q=80',
+                details: `${state.builder.flowers.map(f => f.name).join(', ')} in ${state.builder.vessel.name}`,
+                qty: 1
+            };
+
+            state.cart.push(customItem);
+            updateCartBadge();
+            toggleCartDrawer(true);
+            triggerPetalAnimation();
+            showToast('Custom Arrangement added to Basket! 🌸');
+        }
+
+        // CART MANAGEMENT
+        function addToCart(productId) {
+            const product = PRODUCTS.find(p => p.id === productId);
+            if (!product) return;
+
+            const existing = state.cart.find(item => item.id === productId);
+            if (existing) {
+                existing.qty += 1;
+            } else {
+                state.cart.push({ ...product, qty: 1 });
+            }
+
+            updateCartBadge();
+            showToast(`Added "${product.name}" to Basket!`);
+            triggerPetalAnimation();
+        }
+
+        function updateCartQty(id, delta) {
+            const item = state.cart.find(i => i.id === id);
+            if (!item) return;
+            item.qty += delta;
+            if (item.qty <= 0) {
+                state.cart = state.cart.filter(i => i.id !== id);
+            }
+            renderCartDrawer();
+            updateCartBadge();
+        }
+
+        function updateCartBadge() {
+            const count = state.cart.reduce((sum, item) => sum + item.qty, 0);
+            document.getElementById('cart-badge-count').textContent = count;
+            document.getElementById('mobile-cart-badge').textContent = count;
+        }
+
+        function toggleCartDrawer(show) {
+            const drawer = document.getElementById('cart-drawer');
+            const overlay = document.getElementById('cart-drawer-overlay');
+
+            if (show) {
+                renderCartDrawer();
+                overlay.classList.remove('hidden');
+                setTimeout(() => drawer.classList.remove('translate-x-full'), 10);
+            } else {
+                drawer.classList.add('translate-x-full');
+                setTimeout(() => overlay.classList.add('hidden'), 300);
+            }
+        }
+
+        function renderCartDrawer() {
+            const container = document.getElementById('cart-items-container');
+
+            if (state.cart.length === 0) {
+                container.innerHTML = `
+                    <div class="py-16 text-center space-y-3">
+                        <i data-lucide="shopping-bag" class="w-12 h-12 text-stone-300 mx-auto"></i>
+                        <p class="text-stone-500 font-medium text-sm">Your floral basket is empty.</p>
+                        <button onclick="toggleCartDrawer(false)" class="px-4 py-2 bg-botanical-700 text-white rounded-full text-xs font-semibold">Start Shopping</button>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = state.cart.map(item => `
+                    <div class="pt-3 flex gap-3 items-center">
+                        <img src="${item.image}" class="w-16 h-16 rounded-xl object-cover shrink-0 border border-stone-200">
+                        <div class="flex-1 min-w-0 space-y-1">
+                            <h4 class="font-serif font-bold text-stone-900 text-xs sm:text-sm truncate">${item.name}</h4>
+                            <p class="text-[10px] text-stone-500 truncate">${item.details || item.category || 'Bouquet'}</p>
+                            <span class="font-bold text-xs text-botanical-800">$${(item.price * item.qty).toFixed(2)}</span>
+                        </div>
+                        <div class="flex items-center gap-2 bg-stone-100 px-2 py-1 rounded-lg">
+                            <button onclick="updateCartQty('${item.id}', -1)" class="text-stone-600 hover:text-stone-900 font-bold text-xs">-</button>
+                            <span class="text-xs font-bold text-stone-800 w-4 text-center">${item.qty}</span>
+                            <button onclick="updateCartQty('${item.id}', 1)" class="text-stone-600 hover:text-stone-900 font-bold text-xs">+</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Calculations
+            let subtotal = state.cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            let discount = state.promoApplied ? subtotal * 0.1 : 0;
+            let delivery = subtotal >= 85 || subtotal === 0 ? 0 : 5.99;
+            let finalTotal = subtotal - discount + delivery;
+
+            document.getElementById('cart-subtotal').textContent = `$${subtotal.toFixed(2)}`;
+            document.getElementById('cart-delivery-cost').textContent = delivery === 0 ? 'FREE' : `$${delivery.toFixed(2)}`;
+            document.getElementById('cart-final-total').textContent = `$${finalTotal.toFixed(2)}`;
+
+            // Shipping progress bar
+            const freeThreshold = 85;
+            const progress = Math.min(100, (subtotal / freeThreshold) * 100);
+            document.getElementById('free-shipping-bar').style.width = `${progress}%`;
+            document.getElementById('free-shipping-percent').textContent = `${Math.round(progress)}%`;
+            document.getElementById('free-shipping-text').textContent = subtotal >= freeThreshold 
+                ? '🎉 You unlocked FREE Express Delivery!' 
+                : `Add $${(freeThreshold - subtotal).toFixed(2)} more for FREE delivery!`;
+
+            lucide.createIcons();
+        }
+
+        function applyPromoCode() {
+            const input = document.getElementById('promo-code-input').value.trim().toUpperCase();
+            if (input === 'BLOOM10') {
+                state.promoApplied = true;
+                document.getElementById('promo-discount-row').classList.remove('hidden');
+                renderCartDrawer();
+                showToast('Promo code BLOOM10 applied! 10% OFF');
+            } else {
+                showToast('Invalid promo code. Try BLOOM10');
+            }
+        }
+
+        // WISHLIST LOGIC
+        function toggleWishlist(productId) {
+            const idx = state.wishlist.findIndex(item => item.id === productId);
+            const product = PRODUCTS.find(p => p.id === productId);
+
+            if (idx > -1) {
+                state.wishlist.splice(idx, 1);
+                showToast(`Removed from Wishlist`);
+            } else {
+                state.wishlist.push(product);
+                showToast(`Saved to Wishlist! ❤️`);
+            }
+
+            // Update badge counts
+            const favBadge = document.getElementById('fav-badge');
+            const mobileFavDot = document.getElementById('mobile-fav-dot');
+            favBadge.textContent = state.wishlist.length;
+            favBadge.classList.toggle('hidden', state.wishlist.length === 0);
+            mobileFavDot.classList.toggle('hidden', state.wishlist.length === 0);
+
+            renderCatalog();
+            if (state.activeTab === 'favorites') renderWishlist();
+        }
+
+        function renderWishlist() {
+            const container = document.getElementById('wishlist-grid');
+            if (state.wishlist.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full py-16 text-center space-y-3">
+                        <i data-lucide="heart-off" class="w-12 h-12 text-stone-300 mx-auto"></i>
+                        <p class="text-stone-500 font-medium text-sm">Your wishlist is currently empty.</p>
+                        <button onclick="switchTab('home')" class="px-4 py-2 bg-botanical-700 text-white rounded-full text-xs font-semibold">Explore Catalog</button>
+                    </div>
+                `;
+                lucide.createIcons();
+                return;
+            }
+
+            container.innerHTML = state.wishlist.map(product => `
+                <div class="bg-white rounded-2xl overflow-hidden border border-stone-200 p-3 flex flex-col justify-between space-y-2">
+                    <img src="${product.image}" class="w-full aspect-square object-cover rounded-xl">
+                    <div>
+                        <h4 class="font-serif font-bold text-stone-900 text-sm">${product.name}</h4>
+                        <span class="font-bold text-xs text-stone-800">$${product.price.toFixed(2)}</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="addToCart('${product.id}')" class="flex-1 py-2 bg-botanical-700 text-white rounded-xl text-xs font-bold active-bounce">Add to Cart</button>
+                        <button onclick="toggleWishlist('${product.id}')" class="p-2 text-stone-400 hover:text-bliss-600 rounded-xl border border-stone-200">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function clearWishlist() {
+            state.wishlist = [];
+            renderWishlist();
+        }
+
+        // CHECKOUT & DELIVERY MODAL LOGIC
+        function openCheckoutModal() {
+            if (state.cart.length === 0) {
+                showToast('Your basket is empty!');
+                return;
+            }
+            toggleCartDrawer(false);
+            document.getElementById('checkout-modal').classList.remove('hidden');
+        }
+
+        function closeCheckoutModal() {
+            document.getElementById('checkout-modal').classList.add('hidden');
+        }
+
+        function updateLiveGiftCard() {
+            const text = document.getElementById('checkout-gift-note').value;
+            document.getElementById('live-card-text').textContent = text ? `"${text}"` : `"Wishing you endless happiness and vibrant smiles!"`;
+        }
+
+        function processOrder(e) {
+            e.preventDefault();
+            closeCheckoutModal();
+
+            // Trigger Confetti Celebration
+            confetti({
+                particleCount: 120,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+
+            // Clear Cart
+            state.cart = [];
+            updateCartBadge();
+
+            showToast('🎉 Order Successfully Placed! Delivery scheduled.');
+        }
+
+        // MICRO-INTERACTIONS & VISUAL POLISH
+        function showToast(message) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'bg-stone-900/90 backdrop-blur-md text-white px-4 py-3 rounded-2xl text-xs font-semibold shadow-xl flex items-center gap-2 animate-in fade-in slide-in-from-top-4 duration-200 pointer-events-auto';
+            toast.innerHTML = `
+                <i data-lucide="sparkles" class="w-4 h-4 text-bliss-300 shrink-0"></i>
+                <span>${message}</span>
+            `;
+            container.appendChild(toast);
+            lucide.createIcons();
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'transition', 'duration-300');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function triggerPetalAnimation() {
+            const container = document.getElementById('petal-container');
+            const colors = ['#f7d1d6', '#f1abb4', '#adcaad', '#FAF7F2'];
+
+            for (let i = 0; i < 8; i++) {
+                const petal = document.createElement('div');
+                petal.className = 'petal';
+                petal.style.left = `${Math.random() * 100}vw`;
+                petal.style.top = `-20px`;
+                petal.style.width = `${Math.random() * 12 + 8}px`;
+                petal.style.height = `${Math.random() * 16 + 12}px`;
+                petal.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                petal.style.borderRadius = '50% 0 50% 50%';
+                petal.style.animationDuration = `${Math.random() * 2 + 2}s`;
+                container.appendChild(petal);
+
+                setTimeout(() => petal.remove(), 3000);
+            }
+        }
+    </script>
+</body>
+</html>
